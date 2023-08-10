@@ -41,6 +41,11 @@ pub fn create_recipe(
     #[allow(unused_mut)]
     let mut fork_db = CacheDB::new(shared_backend);
 
+
+    // Where do we check the optimal_in is less thanthe weth_inventory in the
+    // searcher' address?
+
+    // why below 
     #[cfg(feature = "debug")]
     {
         inject_huff_sando(
@@ -153,7 +158,9 @@ pub fn create_recipe(
             TransactTo::Call(rAddress::from_slice(&meat.to.unwrap_or_default().0));
         evm.env.tx.data = meat.input.0.clone();
         evm.env.tx.value = meat.value.into();
+        // Why we set the chain id here?
         evm.env.tx.chain_id = meat.chain_id.map(|id| id.as_u64());
+        // Should we check nonce to prevent any fake tx?
         //evm.env.tx.nonce = Some(meat.nonce.as_u64());
         evm.env.tx.gas_limit = meat.gas.as_u64();
         match meat.transaction_type {
@@ -239,6 +246,7 @@ pub fn create_recipe(
     evm.env.tx = backrun_tx_env.clone();
 
     // create access list
+    // Why we need to use access list here
     let mut access_list_inspector = AccessListTracer::new(
         Default::default(),
         searcher,

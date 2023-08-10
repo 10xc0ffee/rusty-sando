@@ -239,6 +239,7 @@ impl SandoRecipe {
             value: Some(self.frontrun.value.into()),
             data: Some(self.frontrun.data.into()),
             nonce: Some(nonce),
+            // What is the transaction_type with this constructor?
             access_list: access_list_to_ethers(self.frontrun.access_list),
             max_fee_per_gas: Some(self.target_block.base_fee_per_gas.into()),
             ..Default::default()

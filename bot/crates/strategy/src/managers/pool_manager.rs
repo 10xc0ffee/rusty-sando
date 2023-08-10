@@ -109,6 +109,10 @@ impl<M: Middleware + 'static> PoolManager<M> {
                 // right now bot can only sandwich `weth->token` trades
                 // enhancement: add support for `token->weth` trades (using longtail or flashswaps sandos)
                 if to > from {
+                    // From and to are balances of the ERC20 Token in WETH's address. If t is increasing, that means the tx 
+                    // is trading WETH for the token.
+                    // So a frontrun tx transfering weth->token, plus the victim tx, plus the backrun
+                    // tx token->weth, forms the sandwich attack.
                     sandwichable_pools.push(pool);
                 }
             }

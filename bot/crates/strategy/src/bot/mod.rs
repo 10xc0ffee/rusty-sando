@@ -30,7 +30,8 @@ pub struct SandoBot<M> {
     sando_state_manager: SandoStateManager,
 }
 
-impl<M: Middleware + 'static> SandoBot<M> {
+impl<M> SandoBot<M> where M : Middleware + 'static
+{
     /// Create a new instance
     pub fn new(client: Arc<M>, config: StratConfig) -> Self {
         Self {

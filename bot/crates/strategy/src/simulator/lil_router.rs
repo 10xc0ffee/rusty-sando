@@ -237,6 +237,7 @@ async fn evaluate_sandwich_revenue(
         // evm.env.tx.nonce = Some(meat.nonce.as_u64()); /** ignore nonce check for now **/
         evm.env.tx.gas_limit = meat.gas.as_u64();
         match meat.transaction_type {
+            // 1.  Why we use U64([0]) (an array) here; 2. why Some(0) is a legacy type
             Some(ethers::types::U64([0])) => {
                 // legacy tx
                 evm.env.tx.gas_price = meat.gas_price.unwrap_or_default().into();

@@ -43,8 +43,8 @@ async fn main() -> Result<()> {
     engine.add_collector(Box::new(block_collector));
 
     // Setup mempool collector
-    let mempool_collector = Box::new(MempoolCollector::new(provider.clone()));
-    let mempool_collector = CollectorMap::new(mempool_collector, Event::NewTransaction);
+    let mempool_collector: Box<MempoolCollector<Provider<Ws>>> = Box::new(MempoolCollector::new(provider.clone()));
+    let mempool_collector  = CollectorMap::new(mempool_collector, Event::NewTransaction);
     engine.add_collector(Box::new(mempool_collector));
 
     // Setup strategy
