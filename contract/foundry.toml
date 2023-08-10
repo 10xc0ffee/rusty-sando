@@ -18,5 +18,5 @@ remappings = [
   "v3-periphery/=lib/v3-periphery/contracts/",
   "solmate=lib/solmate/src/",
 ]
-eth-rpc-url = "http://localhost:8545"
+eth-rpc-url = "https://api.bitstack.com/v1/wNFxbiJyQsSeLrX8RRCHi7NpRxrlErZk/DjShIqLishPCTB9HiMkPHXjUM9CNM9Na/ETH/mainnet"
 evm_version = "shanghai"

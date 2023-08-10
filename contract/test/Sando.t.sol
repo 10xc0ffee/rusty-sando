@@ -30,7 +30,8 @@ contract SandoTest is Test {
 
     function setUp() public {
         // change this if ur node isn't hosted on localhost:8545
-        vm.createSelectFork("http://localhost:8545", 17401879);
+        string memory rpc = vm.envString("ETH_RPC_URL");
+        vm.createSelectFork(rpc, 17401879);
         sando = HuffDeployer.deploy("sando");
 
         // fund sando

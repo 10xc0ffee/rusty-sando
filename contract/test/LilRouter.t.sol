@@ -24,6 +24,11 @@ contract LilRouterTest is Test {
 
     /// @notice Set up the testing suite
     function setUp() public {
+
+        string memory rpc = vm.envString("ETH_RPC_URL");
+        uint forkId = vm.createFork(rpc);
+        vm.selectFork(forkId);
+
         lilRouter = new LilRouter();
 
         uniV2Factory = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
