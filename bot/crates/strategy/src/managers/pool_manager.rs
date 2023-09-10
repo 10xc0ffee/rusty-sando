@@ -15,7 +15,11 @@ use ethers::{
 use log::info;
 use std::{path::Path, str::FromStr, sync::Arc};
 
-use crate::{constants::WETH_ADDRESS, startup_info_log};
+use crate::{
+    common::chain_utils::get_inception_block,
+    constants::WETH_ADDRESS,
+    startup_info_log
+};
 
 pub(crate) struct PoolManager<M> {
     /// Provider
@@ -29,13 +33,18 @@ pub(crate) struct PoolManager<M> {
 impl<M: Middleware + 'static> PoolManager<M> {
     /// Gets state of all pools
     pub async fn setup(&mut self) -> Result<()> {
+        // Binary search all the dex addresses in the blockchain to get all the
+        // creation block id.
+        self.init_dexes().await.unwrap();
+
         let checkpoint_path = ".cfmms-checkpoint.json";
-
         let checkpoint_exists = Path::new(checkpoint_path).exists();
-
         let pools = if checkpoint_exists {
             let (_, pools) =
-                sync_pools_from_checkpoint(checkpoint_path, 100000, self.provider.clone()).await?;
+                sync_pools_from_checkpoint(
+                    checkpoint_path,
+                    100000,
+                    self.provider.clone()).await?;
             pools
         } else {
             sync_pairs(
@@ -121,8 +130,8 @@ impl<M: Middleware + 'static> PoolManager<M> {
         Ok(sandwichable_pools)
     }
 
-    pub fn new(provider: Arc<M>) -> Self {
-        let dexes_data = [
+    pub async fn init_dexes(&mut self) -> Result<()> {
+        let mut dexes_data = [
             (
                 // Uniswap v2
                 "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
@@ -173,17 +182,33 @@ impl<M: Middleware + 'static> PoolManager<M> {
             ),
         ];
 
-        let dexes = dexes_data
+        for dex_data in &mut dexes_data {
+            let block_number = get_inception_block(
+                H160::from_str(dex_data.0).unwrap(),
+                self.provider.clone()).await?;
+            dex_data.2 = block_number.as_number().unwrap().as_u64();
+        }
+
+        let dexes = 
+            dexes_data
             .into_iter()
             .map(|(address, variant, number)| {
-                Dex::new(H160::from_str(address).unwrap(), variant, number, Some(300))
+                Dex::new(H160::from_str(address).unwrap(),
+                         variant,
+                         number,
+                         Some(300))
             })
             .collect();
 
+        self.dexes = dexes;
+        Ok(())
+    }
+
+    pub fn new(provider: Arc<M>) -> Self {
         Self {
             pools: DashMap::new(),
             provider,
-            dexes,
+            dexes: Vec::new()
         }
     }
 }

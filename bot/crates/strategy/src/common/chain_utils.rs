@@ -34,9 +34,16 @@ pub async fn get_inception_block<M: Middleware>(
         debug!("Searching ({}) at block {:?} (start: {:?}, last: {:?}).",
                rpc_count, mid_block, start_block, last_block);
         match code {
-            Ok(_) => {
-                info!("Successfully find the code of contract {:?}, block {:?}.", contract, mid_block);
-                last_block = mid_block;
+            Ok(bytes) => {
+                if bytes.len() > 0 {
+                    debug!("Successfully find the code of contract {:?}, block {:?}, codelen {:?}.",
+                          contract, mid_block, bytes.len());
+                    last_block = mid_block;
+                } else {
+                    debug!("Failed to find the code of contract {:?}, block {:?} codelen {:?}.",
+                          contract, mid_block, bytes.len());
+                    start_block = mid_block + 1;
+                }
             },
             Err(e) => {
                 info!("Failed to find the code of contract {:?}, block {:?}, err({:?}).", contract, mid_block, e);
@@ -66,8 +73,7 @@ mod tests {
         env_logger::init();
 
         let contract = Address::from_str("0x115934131916C8b277DD010Ee02de363c09d037c")?;
-        let url: &str =
-            "wss://capable-crimson-vineyard.discover.quiknode.pro/b0f808fe30ebe9dd7b2a7122c563e20f1e9966da/";
+        let url: &str = "ws://192.168.0.12:8545/";
         let provider = Arc::new(Provider::new(Ws::connect(url).await?));
         let block = get_inception_block(contract, provider).await?;
         assert_eq!(block.as_number().unwrap().as_u64(), 12771526u64);

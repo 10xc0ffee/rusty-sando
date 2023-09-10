@@ -12,7 +12,7 @@ use strategy::{
 };
 
 // -- consts --
-static WSS_RPC: &str = "ws://localhost:8545";
+static WSS_RPC: &str = "ws://192.168.0.12:8545";
 pub static WETH_ADDRESS: Lazy<Address> = Lazy::new(|| {
     "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
         .parse()
