@@ -136,6 +136,7 @@ pub fn create_recipe(
             return Err(anyhow!("[huffsando: HALT] frontrun: {:?}", reason));
         }
     };
+    // Why the salmonella inspector did twice but not on meat transactions.
     match salmonella_inspector.is_sando_safu() {
         IsSandoSafu::Safu => { /* continue operation */ }
         IsSandoSafu::NotSafu(not_safu_opcodes) => {
