@@ -13,6 +13,7 @@ futures = "0.3.5"
 async-trait = "0.1.64"
 anyhow = "1.0.70"
 serde = "1.0.145"
+dotenv = "0.15.0"
 
 # EVM based crates
 cfmms = { git = "https://github.com/zayg/cfmms-rs.git", branch = "fix-serialize-dex-fee"}
